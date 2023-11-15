@@ -14,6 +14,7 @@ from torch import nn
 import torch.nn.functional as F  # pylint: disable=unused-import
 from google_drive_downloader import GoogleDriveDownloader as gdd
 from torch.utils import tensorboard
+from utils import score 
 
 
 NUM_INPUT_CHANNELS = 1
