@@ -13,6 +13,8 @@ import torch.nn.functional as F  # pylint: disable=unused-import
 
 from omniglot import get_omniglot_dataloader
 from protonet import ProtoNet
+from torch.utils import tensorboard
+
 
 
 SUMMARY_INTERVAL = 10
