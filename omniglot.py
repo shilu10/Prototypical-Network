@@ -3,22 +3,18 @@ import os
 import glob
 
 import google_drive_downloader as gdd
-import imageio, os
+import imageio
 import numpy as np
 import torch
 from torch.utils.data import dataset, sampler, dataloader
-
 from utils import load_image
 
-# number of classes per each split(train, test, val)
-#NUM_TRAIN_CLASSES = os.environ['NUM_TRAIN_CLASSES']
+
 NUM_TRAIN_CLASSES = 1100
 NUM_VAL_CLASSES = 100
-#NUM_VAL_CLASSES = os.environ['NUM_VAL_CLASSES']
 NUM_TEST_CLASSES = 423
-#NUM_TEST_CLASSES = os.environ['NUM_TEST_CLASSES']
 NUM_SAMPLES_PER_CLASS = 20
-#NUM_SAMPLES_PER_CLASS = os.environ['NUM_SAMPLES_PER_CLASS']
+
 
 
 class OmniglotDataset(dataset.Dataset):
@@ -29,8 +25,9 @@ class OmniglotDataset(dataset.Dataset):
     value is the instantiated task, which consists of sampled (image, label)
     pairs.
     """
-
     _BASE_PATH = './omniglot_resized'
+    if os.path.isdir('./submission'):
+        _BASE_PATH = './submission/omniglot_resized'
     _GDD_FILE_ID = '1iaSFXIYC3AB8q9K_M-oVMa4pmB7yKMtI'
 
     def __init__(self, num_support, num_query):
@@ -70,7 +67,6 @@ class OmniglotDataset(dataset.Dataset):
         """Constructs a task.
 
         Data for each class is sampled uniformly at random without replacement.
-        The ordering of the labels corresponds to that of class_idxs.
 
         Args:
             class_idxs (tuple[int]): class indices that comprise the task
@@ -155,7 +151,8 @@ def get_omniglot_dataloader(
         num_way,
         num_support,
         num_query,
-        num_tasks_per_epoch
+        num_tasks_per_epoch,
+        num_workers=2,
 ):
     """Returns a dataloader.DataLoader for Omniglot.
 
@@ -188,28 +185,8 @@ def get_omniglot_dataloader(
         dataset=OmniglotDataset(num_support, num_query),
         batch_size=batch_size,
         sampler=OmniglotSampler(split_idxs, num_way, num_tasks_per_epoch),
-        num_workers=2,
+        num_workers=num_workers,
         collate_fn=identity,
         pin_memory=torch.cuda.is_available(),
         drop_last=True
     )
-
-
-if __name__ == '__main__':
-    split = 'train' # type of split
-    batch_size = 16  # batch size
-    num_way = 5 # num classes 
-    num_support = 10  # number of samples per class in support set 
-    num_query = 20  # number of samples per class in query set 
-    num_tasks_per_epoch = 100 # number of trining epoch
-
-    train_loader = get_omniglot_dataloader(split=split, 
-                                          batch_size=batch_size, 
-                                          num_way=num_way, 
-                                          num_support=num_support, 
-                                          num_query=num_query, 
-                                          num_tasks_per_epoch=num_tasks_per_epoch)
-    
-    for indx, batch in enumerate(train_loader):
-        print(batch)
-        break 
