@@ -16,6 +16,10 @@ from protonet import ProtoNet
 from torch.utils import tensorboard
 
 
+NUM_INPUT_CHANNELS = 1
+NUM_HIDDEN_CHANNELS = 64
+KERNEL_SIZE = 3
+NUM_CONV_LAYERS = 4
 
 SUMMARY_INTERVAL = 10
 SAVE_INTERVAL = 100
